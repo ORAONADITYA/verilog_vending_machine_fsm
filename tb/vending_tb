@@ -1,0 +1,94 @@
+`timescale 1ns / 1ps
+module vending_tb;
+ reg clk, rst;
+ reg coin_5, buy_btn, qty_in;
+ reg [1:0] product_in;
+ wire [7:0] change_out;
+ wire [1:0] dispense_item;
+ wire [3:0] dispense_qty;
+ // Instantiate DUT
+ top uut (
+ .clk(clk),
+ .rst(rst),
+ .coin_5(coin_5),
+ .product_in(product_in),
+ .qty_in(qty_in),
+ .buy_btn(buy_btn),
+ .change_out(change_out),
+ .dispense_item(dispense_item),
+ .dispense_qty(dispense_qty)
+ );
+ // Clock generation: 10ns period
+ always #5 clk = ~clk;
+ initial begin
+ // Initialize
+ clk = 0;
+ rst = 1;
+ coin_5 = 0;
+ buy_btn = 0;
+ qty_in = 0;
+ product_in = 2'b00;
+ // Hold reset for a couple of cycles
+ #12;
+ rst = 0;
+ // ---- Select Product A ----
+ @(negedge clk);
+ product_in = 2'b01; // Product A
+ #10;
+ product_in = 2'b00;
+ // ---- Enter quantity ----
+ @(negedge clk);
+ qty_in = 1;
+ #10;
+ qty_in = 0;
+ // ---- Insert coins (multiple 5's to ensure enough balance) ----
+ repeat (5) begin
+ @(negedge clk);
+ coin_5 = 1;
+ #10;
+ coin_5 = 0;
+ #10;
+ end
+ // ---- Press buy button ----
+ @(negedge clk);
+ buy_btn = 1;
+ #10;
+ buy_btn = 0;
+ // ---- Wait for dispense + change ----
+ #100;
+ // ---- Try Product B with a fresh cycle ----
+ @(negedge clk);
+ rst = 1;
+ #10;
+ rst = 0;
+ @(negedge clk);
+ product_in = 2'b10; // Product B
+ #10;
+ product_in = 2'b00;
+ @(negedge clk);
+ qty_in = 1;
+ #10;
+ qty_in = 0;
+ repeat (6) begin
+ @(negedge clk);
+ coin_5 = 1;
+ #10;
+ coin_5 = 0;
+ #10;
+ end
+ @(negedge clk);
+ buy_btn = 1;
+ #10;
+ buy_btn = 0;
+ #100;
+ $finish;
+ end
+ // Monitor key signals
+ initial begin
+ $monitor("Time=%0t | state-driven: product_in=%b qty_in=%b coin_5=%bbuy_btn=%b || balance/price internal -> change_out=%0d dispense_item=%bdispense_qty=%0d",
+ $time, product_in, qty_in, coin_5, buy_btn, change_out, dispense_item,
+dispense_qty);
+ end
+ // Optional: dump waveform for GTKWave / Vivado
+ 
+endmodule
