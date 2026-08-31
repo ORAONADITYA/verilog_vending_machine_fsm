@@ -48,7 +48,7 @@ Coins are inserted in increments of 5 units (coin_5).
 
 **Simulation**
 
-
+![BLOCK DIAGRAM](VENDING_MACHINE_TESTBENCH.png)
 The testbench (vending_tb.v) exercises two full purchase cycles:
 
 Selects Product A, quantity of 1, inserts 5 coins (25 units), presses buy, waits for dispense/change.
