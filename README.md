@@ -17,15 +17,25 @@ Architecture
 controller.v — A Moore-style finite state machine that sequences the transaction and drives all datapath control signals (ld_*, clr_*, dispense_enable, give_change).
 
 data_path.v — Wires together the individual datapath components into a single module.
-data_path_components.v — The datapath building blocks:
+
+data_path_components.v — The datapath building blocks.
+
 product_reg — latches the selected product
+
 qty_reg — latches the requested quantity
+
 balance_reg — accumulates inserted coins (+5 per coin)
+
 price_calc — computes total price from product + quantity
+
 balance_comparator — flags whether balance ≥ price
+
 change_calculator — computes change to return (balance − price)
+
 dispense_product — latches the dispensed item and quantity
+
 top.v — Top-level module that instantiates controller and data_path and connects them.
+
 vending_tb.v — Testbench that drives a full purchase sequence for two products and monitors key signals.
 
 **FSM States**
