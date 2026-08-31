@@ -15,6 +15,7 @@ Architecture
 **The design follows a classic FSM + Datapath split:**
 
 controller.v — A Moore-style finite state machine that sequences the transaction and drives all datapath control signals (ld_*, clr_*, dispense_enable, give_change).
+
 data_path.v — Wires together the individual datapath components into a single module.
 data_path_components.v — The datapath building blocks:
 product_reg — latches the selected product
